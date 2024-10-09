@@ -8,10 +8,10 @@ use std::cmp::Ordering;
 use std::fmt::Debug;
 
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 struct TreeNode<T>
 where
-    T: Ord,
+    T: Ord + std::clone::Clone,
 {
     value: T,
     left: Option<Box<TreeNode<T>>>,
@@ -21,14 +21,14 @@ where
 #[derive(Debug)]
 struct BinarySearchTree<T>
 where
-    T: Ord,
+    T: Ord + std::clone::Clone,
 {
     root: Option<Box<TreeNode<T>>>,
 }
 
 impl<T> TreeNode<T>
 where
-    T: Ord,
+    T: Ord + std::clone::Clone,
 {
     fn new(value: T) -> Self {
         TreeNode {
@@ -41,7 +41,7 @@ where
 
 impl<T> BinarySearchTree<T>
 where
-    T: Ord,
+    T: Ord + std::clone::Clone,
 {
 
     fn new() -> Self {
@@ -50,7 +50,21 @@ where
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        if self.root.is_some() {
+            let node = self.root.as_mut();
+            if value > node.unwrap().value {
+                match node.unwrap().right.clone() {
+                    None => (*(node.unwrap())).right = Some( Box::new(TreeNode::new(value.clone()))),
+                    Some(mut n) => {n.insert(value);},
+                }
+            }
+            else {
+                match  node.unwrap().left.clone() {
+                    None => (*(node.unwrap())).left = Some( Box::new(TreeNode::new(value))),
+                    Some(mut n) => {n.insert(value);},
+                }
+            }
+            }
     }
 
     // Search for a value in the BST
@@ -62,11 +76,22 @@ where
 
 impl<T> TreeNode<T>
 where
-    T: Ord,
+    T: Ord + std::clone::Clone,
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
-        //TODO
+        if value > self.value {
+            match self.clone().right {
+                None => self.right = Some( Box::new(TreeNode::new(value))),
+                Some(mut node) => {node.insert(value);},
+            }
+        } 
+        else {
+            match  self.clone().left.clone() {
+                None => self.left = Some( Box::new(TreeNode::new(value))),
+                Some(mut node) => {node.insert(value);},
+            }
+        }
     }
 }
 
